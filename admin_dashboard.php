@@ -67,6 +67,31 @@
                         <label for="itemPrice" class="form-label">Price</label>
                         <input type="number" class="form-control" name="itemPrice" placeholder="Enter price" step="0.01" required>
                     </div>
+
+                    <div class="mb-3 row">
+
+                    <div class="col-md-6">
+    <label for="itemStatus" class="form-label">Status</label>
+    <select class="form-control" name="itemStatus" id="itemStatus" required>
+        <option value="" disabled selected>Select Status</option>
+        <option value="Available">Available</option>
+        <option value="Out of Stock">Out of Stock</option>
+    </select>
+    </div>
+
+    <div class="col-md-6">
+    <label for="itemCondition" class="form-label">Condition</label>
+    <select class="form-control" name="itemCondition" id="itemCondition" required>
+        <option value="" disabled selected>Select Condition</option>
+        <option value="New">New</option>
+        <option value="Used">Used</option>
+        <option value="Damaged">Damaged</option>
+        <option value="Repair">Repair</option>
+    </select>
+</div>
+</div>
+
+
                     <h5>Supplier Details</h5>
                     <div class="mb-3">
                         <label for="supplierDropdown" class="form-label">Select Supplier</label>
@@ -131,7 +156,8 @@
 
     
     <!-- Edit Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -147,19 +173,15 @@
                         </div>
                         <div class="mb-3">
                             <label for="editItemCategory" class="form-label">Category</label>
-                 
                             <select class="form-control mt-2" id="editItemCategory" name="editItemCategory" required>
-                            <option value="" disabled selected>Select Category</option>
-                                        <option value="Furniture">Furniture</option>
-                                        <option value="Stationery">Stationery</option>
-                                        <option value="Electronics">Electronics</option>
-                                        <option value="Sports Equipment">Sports Equipment</option>
-                                        <option value="Lab Equipment">Lab Equipment</option>
-                                        <option value="Computers">Computers</option>
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Stationery">Stationery</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Sports Equipment">Sports Equipment</option>
+                                <option value="Lab Equipment">Lab Equipment</option>
+                                <option value="Computers">Computers</option>
                             </select>
-
-
-
                         </div>
                         <div class="mb-3">
                             <label for="editItemStock" class="form-label">Stock</label>
@@ -169,8 +191,26 @@
                             <label for="editItemPrice" class="form-label">Price</label>
                             <input type="number" class="form-control" id="editItemPrice" name="editItemPrice" step="0.01" required>
                         </div>
+
+
                         <div class="mb-3">
-                            <label for="editSupplierName" class="form-label">Supplier Name</label>
+                            <label for="editItemStatus" class="form-label">Status</label>
+                            <input type="text" class="form-control" name="editItemStatus" id="editItemStatus">
+
+                       
+                        </div>
+
+
+
+                        <div class="mb-3">
+                            <label for="editItemCondition" class="form-label">Condition</label>
+                            <input type="text" class="form-control" name="editItemCondition" id="editItemCondition">
+
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="editSupplierDropdown" class="form-label">Supplier Name</label>
                             <select class="form-control mt-2" id="editSupplierDropdown" name="editSupplierName" required>
                                 <option value="" disabled selected>Select Supplier</option>
                                 <?php
@@ -231,6 +271,8 @@
                             <h6>Stock: ${data.stock}</h6>
                             <h6>Price: ${data.price}</h6>
                             <h6>Supplier: ${data.supplier_name}</h6>
+                            <h6>Status: ${data.status}</h6>
+                            <h6>Item Condition: ${data.item_condition}</h6>
                       
                         `;
                         document.getElementById('itemDetails').innerHTML = detailsHtml;
@@ -257,28 +299,40 @@
 
 
 
-         // Edit button click event
-         document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
+      // Edit button click event
+document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const id = this.getAttribute('data-id');
 
-                // Fetch item details via AJAX
-                fetch('get_item.php?id=' + id)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('editId').value = data.id;
-                        document.getElementById('editItemName').value = data.item_name;
-                        document.getElementById('editItemCategory').value = data.category;
-                        document.getElementById('editItemStock').value = data.stock;
-                        document.getElementById('editItemPrice').value = data.price;
-                        document.getElementById('editSupplierDropdown').value = data.supplier_id;
+        fetch('get_item.php?id=' + id)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data); // Log the response data for debugging
+                if (!data.error) {
+                    // Set form values
+                    document.getElementById('editId').value = data.id;
+                    document.getElementById('editItemName').value = data.item_name;
+                    document.getElementById('editItemCategory').value = data.category;
+                    document.getElementById('editItemStock').value = data.stock;
+                    document.getElementById('editItemPrice').value = data.price;
+                    document.getElementById('editSupplierDropdown').value = data.supplier_id;
+                    document.getElementById('editItemStatus').value = data.status;
+                    document.getElementById('editItemCondition').value = data.item_condition;
+                    
 
-                        // Show the modal
-                        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
-                        editModal.show();
-                    });
+                
+                    // Show the modal
+                    const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+                    editModal.show();
+                } else {
+                    console.error(data.error); // Log error if item not found
+                }
+            })
+            .catch(err => {
+                console.error("Fetch error: ", err); // Log any fetch errors
             });
-        });
+    });
+});
 
 
 

@@ -7,161 +7,150 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Navbar with Search Bar -->
     <?php include("navigation.php"); ?>
+    <?php include('db_connection.php'); 
+    
+    $sql = "SELECT * FROM suppliers";
+    $result = $conn->query($sql);
+    
+    ?>
 
-    <!-- Content Layout with Supplier Registration Form -->
     <div class="container mt-4">
         <div class="row">
             <!-- Registration Form for Supplier -->
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <h2>Register New Supplier</h2>
-                <form>
+                <form action="register_supplier.php" method="POST">
                     <div class="mb-3">
                         <label for="supplierName" class="form-label">Supplier Name</label>
-                        <input type="text" class="form-control" id="supplierName" placeholder="Enter supplier name" required>
+                        <input type="text" class="form-control" name="supplierName" required>
                     </div>
                     <div class="mb-3">
                         <label for="supplierContact" class="form-label">Supplier Contact</label>
-                        <input type="text" class="form-control" id="supplierContact" placeholder="Enter supplier contact" required>
+                        <input type="text" class="form-control" name="supplierContact" required>
                     </div>
                     <div class="mb-3">
                         <label for="supplierEmail" class="form-label">Supplier Email</label>
-                        <input type="email" class="form-control" id="supplierEmail" placeholder="Enter supplier email" required>
+                        <input type="email" class="form-control" name="supplierEmail" required>
                     </div>
                     <div class="mb-3">
                         <label for="supplierAddress" class="form-label">Supplier Address</label>
-                        <input type="text" class="form-control" id="supplierAddress" placeholder="Enter supplier address" required>
+                        <input type="text" class="form-control" name="supplierAddress" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Register Supplier</button>
                 </form>
             </div>
 
             <!-- Supplier List Table -->
-            <div class="col-md-6">
+            <div class="col-md-7">
                 <h2>Supplier List</h2>
                 <table class="table table-striped" id="supplierTable">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col">Supplier ID</th>
                             <th scope="col">Supplier Name</th>
                             <th scope="col">Contact</th>
                             <th scope="col">Email</th>
                             <th scope="col">Address</th>
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-bs-toggle="modal" data-bs-target="#supplierModal" data-id="1" data-name="Supplier A" data-contact="123-456-7890" data-email="supplierA@example.com" data-address="123 Main St.">
-                            <td>1</td>
-                            <td>Supplier A</td>
-                            <td>123-456-7890</td>
-                            <td>supplierA@example.com</td>
-                            <td>123 Main St.</td>
-                        </tr>
-                        <!-- More suppliers can be added similarly -->
+                    <?php
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<tr>";
+                                echo "<td>" . $row['supplier_name'] . "</td>";
+                                echo "<td>" . $row['supplier_contact'] . "</td>";
+                                echo "<td>" . $row['supplier_email'] . "</td>";
+                                echo "<td>" . $row['supplier_address'] . "</td>";
+                                echo "<td>
+                                        <button class='btn btn-primary btn-sm edit-btn' data-id='" . $row['id'] . "'>Edit</button>
+                                        <button class='btn btn-danger btn-sm delete-btn' data-id='" . $row['id'] . "'>Delete</button>
+                                      </td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='5'>No suppliers found</td></tr>";
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Supplier Modal -->
-    <div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="supplierModalLabel">Supplier Details</h5>
+                    <h5 class="modal-title" id="editModalLabel">Edit Supplier</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <p><strong>Name:</strong> <span id="modalSupplierName"></span></p>
-                    <p><strong>Contact:</strong> <span id="modalSupplierContact"></span></p>
-                    <p><strong>Email:</strong> <span id="modalSupplierEmail"></span></p>
-                    <p><strong>Address:</strong> <span id="modalSupplierAddress"></span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="editSupplier" data-bs-toggle="modal" data-bs-target="#editConfirmationModal">Edit</button>
-                    <button type="button" class="btn btn-danger" id="deleteSupplier" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Delete</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                <form id="editForm" method="POST" action="edit_supplier.php">
+                    <div class="modal-body">
+                        <input type="hidden" name="editId" id="editId">
+                        <div class="mb-3">
+                            <label for="editSupplierName" class="form-label">Supplier Name</label>
+                            <input type="text" class="form-control" id="editSupplierName" name="editSupplierName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSupplierContact" class="form-label">Supplier Contact</label>
+                            <input type="text" class="form-control" id="editSupplierContact" name="editSupplierContact" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSupplierEmail" class="form-label">Supplier Email</label>
+                            <input type="email" class="form-control" id="editSupplierEmail" name="editSupplierEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editSupplierAddress" class="form-label">Supplier Address</label>
+                            <input type="text" class="form-control" id="editSupplierAddress" name="editSupplierAddress" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Edit Confirmation Modal -->
-    <div class="modal fade" id="editConfirmationModal" tabindex="-1" aria-labelledby="editConfirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editConfirmationModalLabel">Confirm Edit</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to edit this supplier's details?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmEdit">Confirm Edit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this supplier?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelete">Confirm Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Bootstrap Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Store the supplier ID to be edited or deleted
-        let supplierIdToEdit, supplierRowToDelete;
+        // Edit button click event
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                
+                // Fetch supplier details via AJAX or fill modal form based on table data
+                fetch('get_supplier.php?id=' + id)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('editId').value = data.id;
+                        document.getElementById('editSupplierName').value = data.supplier_name;
+                        document.getElementById('editSupplierContact').value = data.supplier_contact;
+                        document.getElementById('editSupplierEmail').value = data.supplier_email;
+                        document.getElementById('editSupplierAddress').value = data.supplier_address;
+                    });
 
-        // Add event listener to table rows to show modal with supplier details
-        document.querySelectorAll('#supplierTable tbody tr').forEach(row => {
-            row.addEventListener('click', function () {
-                const supplierName = row.getAttribute('data-name');
-                const supplierContact = row.getAttribute('data-contact');
-                const supplierEmail = row.getAttribute('data-email');
-                const supplierAddress = row.getAttribute('data-address');
-
-                document.getElementById('modalSupplierName').innerText = supplierName;
-                document.getElementById('modalSupplierContact').innerText = supplierContact;
-                document.getElementById('modalSupplierEmail').innerText = supplierEmail;
-                document.getElementById('modalSupplierAddress').innerText = supplierAddress;
-
-                // Store the current row and ID for later use
-                supplierIdToEdit = row.getAttribute('data-id');
-                supplierRowToDelete = row;
+                // Show modal
+                new bootstrap.Modal(document.getElementById('editModal')).show();
             });
         });
 
-        // Event listener for Edit button in the modal
-        document.getElementById('confirmEdit').addEventListener('click', function () {
-            alert('Edit functionality not implemented. ID: ' + supplierIdToEdit);
-            $('#editConfirmationModal').modal('hide'); // Close the edit confirmation modal
-        });
-
-        // Event listener for Delete button in the modal
-        document.getElementById('confirmDelete').addEventListener('click', function () {
-            supplierRowToDelete.remove(); // Remove the row from the table
-            $('#deleteConfirmationModal').modal('hide'); // Close the delete confirmation modal
-            $('#supplierModal').modal('hide'); // Also close the supplier details modal
+        // Delete button click event
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                if (confirm('Are you sure you want to delete this supplier?')) {
+                    window.location.href = 'delete_supplier.php?id=' + id;
+                }
+            });
         });
     </script>
+
 </body>
 </html>
