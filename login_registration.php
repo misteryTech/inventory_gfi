@@ -57,9 +57,9 @@
         <li class="nav-item">
             <a class="nav-link active" id="login-tab" data-toggle="tab" href="#login" role="tab">Login</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab">Register</a>
-        </li>
+        </li> -->
     </ul>
 
     <!-- Tab content -->
@@ -80,7 +80,7 @@
         </div>
 
         <!-- Registration Tab -->
-        <div class="tab-pane fade" id="register" role="tabpanel">
+        <!-- <div class="tab-pane fade" id="register" role="tabpanel">
             <form action="register_staff1.php" method="POST">
                 <div class="mb-3">
                     <label for="staffId" class="form-label">Staff ID</label>
@@ -139,7 +139,7 @@
 
                 <button type="submit" class="btn btn-primary">Register Staff</button>
             </form>
-        </div>
+        </div> -->
     </div>
 </div>
 

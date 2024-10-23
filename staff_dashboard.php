@@ -1,175 +1,267 @@
-<?php
-
-
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Layout</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-
-    <style>
-        /* Minimize table column widths */
-        table th, table td {
-            text-align: center;
-            vertical-align: middle;
-        }
-    </style>
+    <title>Department Item Request Form</title>
+    < <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 </head>
 <body>
-    <!-- Navbar with Search Bar -->
+
     <?php include("navigation.php"); ?>
-    
-
-
-    <!-- Database Connection -->
-    <?php
-    include('db_connection.php'); // Include your DB connection file
-
-    // Fetch inventory items
-    $sql = "SELECT i.*, s.id as supplier_id, s.supplier_name
-            FROM inventory i 
-            INNER JOIN suppliers s ON i.supplier_name = s.id"; 
-    $result = $conn->query($sql);
-
-    // Fetch the list of suppliers from the database
-    $sql = "SELECT id, supplier_name FROM suppliers";
-    $result_supplier = $conn->query($sql);
+    <?php include('db_connection.php'); 
+        $staff_id = $_SESSION['staff_id'];
     ?>
 
-    <!-- Content Layout with Form and Table -->
+
+    <?php
+    // Check if form is submitted
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Fetch data from the form
+        $staff_id = $_POST['staff_id'];
+        $reason = $_POST['reason'];
+        $items = $_POST['items'];
+        $quantities = $_POST['quantities'];
+
+        // Insert request into the requests_table first
+        $sqlInsertRequest = "INSERT INTO requests_table (staff_id, reason, request_date, status) VALUES (?, ?, NOW(), 'Pending')";
+        $stmt = $conn->prepare($sqlInsertRequest);
+        $stmt->bind_param("ss", $staff_id, $reason);
+        $stmt->execute();
+        $request_id = $conn->insert_id; // Get the last inserted request_id
+
+        // Insert each requested item
+        for ($i = 0; $i < count($items); $i++) {
+            $item_id = $items[$i];
+            $quantity = $quantities[$i];
+
+            $sqlInsertItem = "INSERT INTO request_items_table (request_id, item, quantity) VALUES (?, ?, ?)";
+            $stmtItem = $conn->prepare($sqlInsertItem);
+            $stmtItem->bind_param("iii", $request_id, $item_id, $quantity);
+            $stmtItem->execute();
+        }
+
+        // Redirect or display success message
+        echo "<script>alert('Request submitted successfully!'); 
+        window.location.href='request_page.php';</script>";
+    }
+
+    // Fetch items available in inventory
+    $sqlItems = "SELECT * FROM inventory"; // Assuming you have an `inventory` table
+    $resultItems = $conn->query($sqlItems);
+    ?>
+
     <div class="container mt-4">
         <div class="row">
-            <!-- Registration Form for Inventory -->
+            <!-- Request Form -->
             <div class="col-md-5">
-                <h2>Register New Inventory Item</h2>
-                <form action="register_item.php" method="POST">
+                <h2>Request Items for Department</h2>
+                <form action="" method="POST">
                     <div class="mb-3">
-                        <label for="itemCode" class="form-label">Item Code</label>
-                        <input type="text" class="form-control" name="itemCode" placeholder="Enter item code" required>
+                        <label for="staffId" class="form-label">Staff ID</label>
+                        <input type="text" id="staff_id" name="staff_id" value="<?php echo htmlspecialchars($staff_id); ?>" class="form-control" readonly>
                     </div>
+
                     <div class="mb-3">
-                        <label for="itemName" class="form-label">Item Name</label>
-                        <input type="text" class="form-control" name="itemName" placeholder="Enter item name" required>
+                        <label for="reason" class="form-label">Reason for Request</label>
+                        <input type="text" class="form-control" name="reason" id="reason" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="itemCategory" class="form-label">Category</label>
-                        <select class="form-control" name="itemCategory" id="itemCategory" required>
-                            <option value="" disabled selected>Select Category</option>
-                            <option value="Furniture">Furniture</option>
-                            <option value="Stationery">Stationery</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Sports Equipment">Sports Equipment</option>
-                            <option value="Lab Equipment">Lab Equipment</option>
-                            <option value="Computers">Computers</option>
-                        </select>
+
+                    <div id="itemContainer">
+                        <div class="row mb-3 item-row">
+                            <div class="col-8">
+                                <label for="items" class="form-label">Select Item</label>
+                                <select class="form-select" name="items[]" required>
+                                    <option value="">Select Item</option>
+                                    <?php
+                                    // Fetch items for the first dropdown
+                                    if ($resultItems->num_rows > 0) {
+                                        while ($item = $resultItems->fetch_assoc()) {
+                                            echo "<option value='{$item['id']}'>{$item['item_name']} ({$item['item_code']})</option>";
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <label for="quantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" name="quantities[]" min="1" required>
+                            </div>
+                            <div class="col-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-danger remove-item">-</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="itemStock" class="form-label">Stock</label>
-                        <input type="number" class="form-control" name="itemStock" placeholder="Enter stock quantity" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="itemPrice" class="form-label">Price</label>
-                        <input type="number" class="form-control" name="itemPrice" placeholder="Enter price" step="0.01" required>
-                    </div>
-                    <h5>Supplier Details</h5>
-                    <div class="mb-3">
-                        <label for="supplierDropdown" class="form-label">Select Supplier</label>
-                        <select class="form-control mt-2" id="supplierDropdown" name="supplierName" required>
-                            <option value="" disabled selected>Select Supplier</option>
-                            <?php
-                            if ($result_supplier->num_rows > 0) {
-                                while ($row_supplier = $result_supplier->fetch_assoc()) {
-                                    echo "<option value='" . $row_supplier['id'] . "'>" . $row_supplier['supplier_name'] . "</option>";
-                                }
-                            } else {
-                                echo "<option value='' disabled>No suppliers found</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn mb-5 btn-primary">Register Item</button>
+
+                    <button type="button" class="btn btn-success" id="addItem">Add Item</button>
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
                 </form>
             </div>
 
-            <!-- Inventory Table -->
+            <!-- Requested Items Table -->
             <div class="col-md-7">
-                <h2>Inventory List</h2>
-                <table class="table table-striped" id="inventoryTable">
+                <h2>Requested Items</h2>
+                <table class="table table-striped" id="requestedItemsTable">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col">QR Code</th>
-                            <th scope="col">Item Code</th>
-                            <th scope="col">Item Name</th>
-                            <th scope="col">Stock</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Actions</th>
+                            <th scope="col">Staff Id</th>
+                            <th scope="col">Reason</th>
+                            <th scope="col">Request Date</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                echo "<tr>";
-                                echo "<td><img src='" . $row['qr_code_path'] . "' alt='QR Code' width='50' height='50'></td>";
-                                echo "<td>" . $row['item_code'] . "</td>";
-                                echo "<td>" . $row['item_name'] . "</td>";
-                                echo "<td>" . $row['stock'] . "</td>";
-                                echo "<td>" . $row['price'] . "</td>";
-                                echo "<td>
-                                <button class='btn btn-primary btn-sm view-btn' data-id='" . $row['id'] . "'>View</button>
-                                <button class='btn btn-success btn-sm edit-btn' data-id='" . $row['id'] . "'>Edit</button>
-                                <button class='btn btn-danger btn-sm delete-btn' data-id='" . $row['id'] . "'>Delete</button>
-                                      </td>";
-                                echo "</tr>";
-                            }
-                        } else {
-                            echo "<tr><td colspan='6'>No items found</td></tr>";
+                    <?php
+                    // Query for requested items
+                    $sqlRequestedItems = "
+                        SELECT * FROM requests_table WHERE staff_id = '$staff_id'";
+
+                    $resultRequestedItems = $conn->query($sqlRequestedItems);
+
+                    if ($resultRequestedItems->num_rows > 0) {
+                        while ($row = $resultRequestedItems->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . htmlspecialchars($row['staff_id']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['request_date']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                            echo "<td>
+                                <button class='btn btn-primary btn-sm view-btn' data-id='" . htmlspecialchars($row['request_id']) . "'>View</button>
+                              </td>";
+                            echo "</tr>";
                         }
-                        ?>
+                    } else {
+                        echo "<tr><td colspan='5'>No items requested yet</td></tr>";
+                    }
+                    ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- Modal for Viewing Request Details -->
+    <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Item</h5>
+                    <h5 class="modal-title" id="requestModalLabel">Request Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="editForm" method="POST" action="edit_item.php">
-                    <div class="modal-body">
-                        <input type="hidden" name="editId" id="editId">
-                        <div class="mb-3">
-                            <label for="editItemName" class="form-label">Item Name</label>
-                            <input type="text" class="form-control" id="editItemName" name="editItemName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editItemCategory" class="form-label">Category</label>
-                            <select class="form-control mt-2" id="editItemCategory" name="editItemCategory" required>
-                                <option value="" disabled selected>Select Category</option>
-                                <option value="Furniture">Furniture</option>
-                                <option value="Stationery">Stationery</option>
-                                <option value="Electronics">Electronics</option>
-                                <option value="Sports Equipment">Sports Equipment</option>
-                                <option value="Lab Equipment">Lab Equipment</option>
-                                <option value="Computers">Computers</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editItemStock" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="editItemStock" name="editItemStock" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editItemPrice"
+                <div class="modal-body" id="modalContent">
+                    <!-- AJAX content will load here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap and jQuery Scripts -->
+     <!-- Bootstrap, jQuery, and DataTables Scripts -->
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <script>
+
+$('#requestedItemsTable').DataTable();
+
+    // Add item row dynamically
+    document.getElementById('addItem').addEventListener('click', function() {
+        const itemContainer = document.getElementById('itemContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'row mb-3 item-row';
+        newRow.innerHTML = `
+            <div class="col-8">
+                <label for="items" class="form-label">Select Item</label>
+                <select class="form-select" name="items[]" required>
+                    <option value="">Select Item</option>
+                    <?php
+                    // Re-fetch items to populate new dropdowns
+                    if ($resultItems->num_rows > 0) {
+                        $resultItems->data_seek(0); // Reset the pointer to fetch again
+                        while ($item = $resultItems->fetch_assoc()) {
+                            echo "<option value='{$item['id']}'>{$item['item_name']} ({$item['item_code']})</option>";
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="col-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" class="form-control" name="quantities[]" min="1" required>
+            </div>
+            <div class="col-1 d-flex align-items-end">
+                <button type="button" class="btn btn-danger remove-item">-</button>
+            </div>
+        `;
+        itemContainer.appendChild(newRow);
+    });
+
+    // Remove item row
+    document.getElementById('itemContainer').addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item')) {
+            e.target.closest('.item-row').remove();
+        }
+    });
+
+    // View button click event to open modal
+    $(document).on('click', '.view-btn', function() {
+        const requestId = $(this).data('id');
+        $.ajax({
+            url: 'fetch_request_details.php', // Create this script to fetch request details
+            type: 'POST',
+            data: { request_id: requestId },
+            success: function(response) {
+                $('#modalContent').html(response); // Load the response into the modal content
+                $('#requestModal').modal('show');  // Show the modal
+
+                // Add Accept and Decline buttons
+                $('#modalContent').append(`
+                    <div class="modal-footer">
+                   
+                    </div>
+                `);
+            }
+        });
+    });
+
+    // Accept button click event
+    $(document).on('click', '.accept-btn', function() {
+        const requestId = $(this).data('id');
+        $.ajax({
+            url: 'process_request.php', // Create this script to handle acceptance
+            type: 'POST',
+            data: { request_id: requestId, action: 'accept' },
+            success: function(response) {
+                alert('Request accepted successfully!');
+                location.reload();
+                $('#requestModal').modal('hide');
+                // Optionally, refresh the request list or reload the page
+            }
+        });
+    });
+
+    // Decline button click event
+    $(document).on('click', '.decline-btn', function() {
+        const requestId = $(this).data('id');
+        $.ajax({
+            url: 'process_request.php', // Create this script to handle decline
+            type: 'POST',
+            data: { request_id: requestId, action: 'decline' },
+            success: function(response) {
+                alert('Request declined successfully!');
+                location.reload();
+                $('#requestModal').modal('hide');
+                // Optionally, refresh the request list or reload the page
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

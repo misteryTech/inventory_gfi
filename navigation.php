@@ -46,12 +46,11 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
 
                 <!-- Staff and Admin share these links -->
                 <?php if ($role === 'Administrator' || $role === 'staff'): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="request_form.php">Request Page</a>
-                    </li>
+                   
                     <li class="nav-item">
                         <a class="nav-link" href="release_form.php">Released Page</a>
                     </li>
+                  
                 <?php endif; ?>
             </ul>
 
