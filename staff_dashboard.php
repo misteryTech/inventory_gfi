@@ -117,7 +117,7 @@
                 <table class="table table-striped" id="requestedItemsTable">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col">Staff Id</th>
+                            <th scope="col">Request #</th>
                             <th scope="col">Reason</th>
                             <th scope="col">Request Date</th>
                             <th scope="col">Status</th>
@@ -135,7 +135,7 @@
                     if ($resultRequestedItems->num_rows > 0) {
                         while ($row = $resultRequestedItems->fetch_assoc()) {
                             echo "<tr>";
-                            echo "<td>" . htmlspecialchars($row['staff_id']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['request_number']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['request_date']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['status']) . "</td>";
