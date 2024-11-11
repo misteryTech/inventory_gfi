@@ -12,8 +12,6 @@
     <?php include("navigation.php"); ?>
     <?php include('db_connection.php'); ?>
 
-    <!-- Rest of the form handling and items fetching code here -->
-
     <!-- Requested Items Table -->
     <div class="container mt-4">
         <div class="row">
@@ -22,39 +20,64 @@
                 <table class="table table-striped" id="requestedItemsTable">
                     <thead>
                         <tr>
-                            <th>Staff Name</th>
+                    
+                            <th>Request ID</th>
+                            <th>Staff ID</th>
+                            <th>Position</th>
                             <th>Department</th>
-                            <th>Reason</th>
-                            <th>Request Date</th>
+                            <th>Quantity</th>
                             <th>Status</th>
-                            <th>Action</th>
+                        
                         </tr>
                     </thead>
                     <tbody>
                     <?php
-                    // Query for requested items
-                    $sqlRequestedItems = "SELECT r.request_id, r.staff_id, r.reason, r.request_date, r.status, 
-                        s.staff_firstname, s.staff_lastname, s.staff_department 
-                        FROM requests_table r
-                        INNER JOIN staff s ON r.staff_id = s.staff_id";
+include('db_connection.php');
 
-                    $resultRequestedItems = $conn->query($sqlRequestedItems);
+// Check if the 'id' parameter is set in the URL
+if (isset($_GET['id'])) {
+    $itemId = $_GET['id'];
 
-                    if ($resultRequestedItems->num_rows > 0) {
-                        while ($row = $resultRequestedItems->fetch_assoc()) {
-                            echo "<tr>";
-                            echo "<td>" . htmlspecialchars($row['staff_firstname'].' '. $row['staff_lastname']). "</td>";
-                            echo "<td>" . htmlspecialchars($row['staff_department']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['request_date']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['status']) . "</td>";
-                            echo "<td><button class='btn btn-primary btn-sm view-btn' data-id='" . htmlspecialchars($row['request_id']) . "'>View</button></td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='5'>No items requested yet</td></tr>";
-                    }
-                    ?>
+    // Fetch item details based on item (or request_id)
+    $sqlItem = "SELECT RIT.*,RT.*,S.*
+                FROM request_items_table AS RIT
+
+                INNER JOIN requestS_table AS RT  ON RT.request_id = RIT.request_id
+                INNER JOIN staff AS S ON S.staff_id = RT.staff_id
+
+                WHERE RIT.item = ?";
+
+    $stmt = $conn->prepare($sqlItem);
+    $stmt->bind_param("s", $itemId); // Use "s" if request_id is a string, or "i" if it's an integer
+    $stmt->execute();
+    $resultRequestedItems = $stmt->get_result();
+
+    // Check if any items were found
+    if ($resultRequestedItems->num_rows > 0) {
+        while ($row = $resultRequestedItems->fetch_assoc()) {
+            echo "<tr>";
+           
+            echo "<td>" . htmlspecialchars($row['request_id']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['staff_id']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['staff_position']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['staff_department']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['quantity']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+
+        
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='6'>No items requested yet</td></tr>";
+    }
+
+    $stmt->close();
+} else {
+    echo "<tr><td colspan='6'>No item selected.</td></tr>";
+}
+
+$conn->close();
+?>
                     </tbody>
                 </table>
             </div>

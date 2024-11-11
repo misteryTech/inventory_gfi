@@ -3,156 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS System</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Inventory Management System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        .container {
-            margin-top: 20px;
-        }
-        .sidebar {
+        body {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.8), rgba(200, 0, 0, 0.8));
             height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            background-color: #343a40;
-            color: #fff;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 100px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+        }
+        .banner {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tab-content {
             padding-top: 20px;
         }
-        .sidebar a {
-            color: #fff;
-            padding: 10px 15px;
-            display: block;
-            text-decoration: none;
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
         }
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-        .content {
-            margin-left: 260px;
-            padding: 20px;
-        }
-        .register {
-            border: 1px solid #ddd;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-        }
-        .register .form-group {
-            margin-bottom: 1rem;
-        }
-        .register .btn {
-            margin-top: 1rem;
-        }
-        .item-table th, .item-table td {
-            text-align: center;
+        .btn-success:hover {
+            background-color: #28a745;
+            border-color: #28a745;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h4 class="text-center">POS System</h4>
-        <a href="#register">Register Sale</a>
-        <a href="#inventory">Inventory</a>
-        <a href="#reports">Reports</a>
+
+<div class="container col-md-6">
+    <div class="banner">
+        <h2 style="color: #b30000;">Welcome to Our Inventory Management System</h2>
+        <p>Login or Register to Continue</p>
     </div>
 
-    <div class="content">
-        <div class="container">
-            <!-- Register Sale Section -->
-            <div id="register" class="register">
-                <h2>Register Sale</h2>
-                <form>
-                    <div class="form-group">
-                        <label for="itemName">Item Name</label>
-                        <input type="text" class="form-control" id="itemName" placeholder="Enter item name">
-                    </div>
-                    <div class="form-group">
-                        <label for="itemPrice">Price</label>
-                        <input type="number" class="form-control" id="itemPrice" placeholder="Enter item price">
-                    </div>
-                    <div class="form-group">
-                        <label for="itemQuantity">Quantity</label>
-                        <input type="number" class="form-control" id="itemQuantity" placeholder="Enter item quantity">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add Item</button>
-                </form>
-                <h4 class="mt-4">Items in Cart</h4>
-                <table class="table table-striped item-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Cart items will be listed here -->
-                        <tr>
-                            <td>Example Item</td>
-                            <td>$10.00</td>
-                            <td>2</td>
-                            <td>$20.00</td>
-                            <td><button class="btn btn-warning btn-sm">Edit</button> <button class="btn btn-danger btn-sm">Remove</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h4>Total: $20.00</h4>
-                <button class="btn btn-success btn-lg btn-block">Complete Sale</button>
-            </div>
-
-            <!-- Inventory Section -->
-            <div id="inventory" class="mt-5">
-                <h2>Inventory</h2>
-                <form>
-                    <div class="form-group">
-                        <label for="inventoryName">Item Name</label>
-                        <input type="text" class="form-control" id="inventoryName" placeholder="Enter item name">
-                    </div>
-                    <div class="form-group">
-                        <label for="inventoryPrice">Price</label>
-                        <input type="number" class="form-control" id="inventoryPrice" placeholder="Enter item price">
-                    </div>
-                    <div class="form-group">
-                        <label for="inventoryQuantity">Quantity</label>
-                        <input type="number" class="form-control" id="inventoryQuantity" placeholder="Enter item quantity">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add to Inventory</button>
-                </form>
-                <h4 class="mt-4">Current Inventory</h4>
-                <table class="table table-striped item-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Inventory items will be listed here -->
-                        <tr>
-                            <td>Example Item</td>
-                            <td>$10.00</td>
-                            <td>50</td>
-                            <td><button class="btn btn-warning btn-sm">Edit</button> <button class="btn btn-danger btn-sm">Delete</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Reports Section -->
-            <div id="reports" class="mt-5">
-                <h2>Reports</h2>
-                <p>Reports section will be available soon.</p>
-            </div>
+    <!-- Alert for successful registration -->
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            Registration successful! You can now log in.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
-    </div>
+    <?php endif; ?>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Tab buttons -->
+    <ul class="nav nav-tabs" id="loginRegisterTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="login-tab" data-toggle="tab" href="#login" role="tab">Login</a>
+        </li>
+        <!-- <li class="nav-item">
+            <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab">Register</a>
+        </li> -->
+    </ul>
+
+    <!-- Tab content -->
+    <div class="tab-content">
+        <!-- Login Tab -->
+        <div class="tab-pane fade show active" id="login" role="tabpanel">
+        <form action="login_process.php" method="POST">
+    <div class="form-group">
+        <label for="loginUsername">Username:</label>
+        <input type="text" class="form-control" name="loginUsername" required>
+    </div>
+    <div class="form-group">
+        <label for="loginPassword">Password:</label>
+        <input type="password" class="form-control" name="loginPassword" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Login</button>
+</form>
+        </div>
+
+        <!-- Registration Tab -->
+        <!-- <div class="tab-pane fade" id="register" role="tabpanel">
+            <form action="register_staff1.php" method="POST">
+                <div class="mb-3">
+                    <label for="staffId" class="form-label">Staff ID</label>
+                    <input type="text" class="form-control" name="staffId" required>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="firstName" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="staffContact" class="form-label">Staff Contact</label>
+                    <input type="text" class="form-control" name="staffContact" required>
+                </div>
+                <div class="mb-3">
+                    <label for="staffEmail" class="form-label">Staff Email</label>
+                    <input type="email" class="form-control" name="staffEmail" required>
+                </div>
+                <div class="mb-3">
+                    <label for="staffPosition" class="form-label">Position</label>
+                    <select class="form-control" name="staffPosition" required>
+                        <option value="">Select Position</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Clerk">Clerk</option>
+                        <option value="Technician">Technician</option>
+                        <option value="Administrator">Administrator</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="staffDepartment" class="form-label">Department</label>
+                    <select class="form-control" name="staffDepartment" required>
+                        <option value="">Select Department</option>
+                        <option value="HR">HR</option>
+                        <option value="IT">IT</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Finance">Finance</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="staffUsername" class="form-label">Username</label>
+                    <input type="text" class="form-control" name="staffUsername" required>
+                </div>
+                <div class="mb-3">
+                    <label for="staffPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="staffPassword" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Register Staff</button>
+            </form>
+        </div> -->
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

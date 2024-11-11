@@ -35,7 +35,7 @@
 
             $sqlInsertItem = "INSERT INTO request_items_table (request_id, item, quantity) VALUES (?, ?, ?)";
             $stmtItem = $conn->prepare($sqlInsertItem);
-            $stmtItem->bind_param("isi", $request_id, $item_id, $quantity); // Changed to isi (integer, string, integer)
+            $stmtItem->bind_param("isi", $request_id, $item_id, $quantity);
             $stmtItem->execute();
         }
 
@@ -45,13 +45,12 @@
     }
 
     // Fetch items available in inventory
-    $sqlItems = "SELECT * FROM inventory"; // Assuming you have an `inventory` table
+    $sqlItems = "SELECT * FROM inventory"; 
     $resultItems = $conn->query($sqlItems);
     ?>
 
     <div class="container mt-4">
         <div class="row">
-            <!-- Request Form -->
             <div class="col-md-5">
                 <h2>Request Items for Department</h2>
                 <form action="" method="POST">
@@ -72,7 +71,6 @@
                                 <select class="form-select" name="items[]" required>
                                     <option value="">Select Item</option>
                                     <?php
-                                    // Fetch items for the first dropdown
                                     if ($resultItems->num_rows > 0) {
                                         while ($item = $resultItems->fetch_assoc()) {
                                             echo "<option value='{$item['item_code']}'>{$item['item_name']} ({$item['item_code']})</option>";
@@ -96,7 +94,6 @@
                 </form>
             </div>
 
-            <!-- Requested Items Table -->
             <div class="col-md-7">
                 <h2>Requested Items</h2>
                 <table class="table table-striped" id="requestedItemsTable">
@@ -112,9 +109,7 @@
                     </thead>
                     <tbody>
                     <?php
-                    // Query for requested items
-                  // Revised SQL query to include staff details
-$sqlRequestedItems = "SELECT r.request_id, r.staff_id, r.reason, r.request_date, r.status, 
+                    $sqlRequestedItems = "SELECT r.request_id, r.staff_id, r.reason, r.request_date, r.status, 
 s.staff_firstname, s.staff_lastname, s.staff_department 
 FROM requests_table r
 INNER JOIN staff s ON r.staff_id = s.staff_id";
@@ -142,7 +137,6 @@ INNER JOIN staff s ON r.staff_id = s.staff_id";
         </div>
     </div>
 
-    <!-- Modal for Viewing Request Details -->
     <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -151,7 +145,6 @@ INNER JOIN staff s ON r.staff_id = s.staff_id";
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modalContent">
-                    <!-- AJAX content will load here -->
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -159,29 +152,26 @@ INNER JOIN staff s ON r.staff_id = s.staff_id";
                                 <th>Quantity</th>
                             </tr>
                         </thead>
-                        <tbody id="requestItemsList">
-                            <!-- Item rows will be appended here via AJAX -->
-                        </tbody>
+                        <tbody id="requestItemsList"></tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
+                    <input type="hidden" id="requestId"> <!-- Hidden input to store request ID -->
+                    <button type="button" class="btn btn-success" id="acceptRequestBtn">Accept Request</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap, jQuery, and DataTables Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
     <script>
     $(document).ready(function() {
-        // Initialize DataTable
         $('#requestedItemsTable').DataTable();
 
-        // Add item row dynamically
         $('#addItem').on('click', function() {
             const itemContainer = $('#itemContainer');
             const newRow = `
@@ -191,9 +181,8 @@ INNER JOIN staff s ON r.staff_id = s.staff_id";
                         <select class="form-select" name="items[]" required>
                             <option value="">Select Item</option>
                             <?php
-                            // Re-fetch items to populate new dropdowns
                             if ($resultItems->num_rows > 0) {
-                                $resultItems->data_seek(0); // Reset the pointer to fetch again
+                                $resultItems->data_seek(0);
                                 while ($item = $resultItems->fetch_assoc()) {
                                     echo "<option value='{$item['item_code']}'>{$item['item_name']} ({$item['item_code']})</option>";
                                 }
@@ -212,25 +201,37 @@ INNER JOIN staff s ON r.staff_id = s.staff_id";
             itemContainer.append(newRow);
         });
 
-        // Remove item row
         $(document).on('click', '.remove-item', function() {
             $(this).closest('.item-row').remove();
         });
 
-        // View button click event
         $('.view-btn').on('click', function() {
             const requestId = $(this).data('id');
-            // AJAX call to fetch items for this request
+            $('#requestId').val(requestId); // Set request ID in hidden input
             $.ajax({
-                url: 'fetch_request_items.php', // URL to your PHP file that handles fetching items
+                url: 'fetch_request_items.php',
                 type: 'GET',
                 data: { request_id: requestId },
                 success: function(data) {
-                    $('#requestItemsList').html(data); // Load fetched items into modal
-                    $('#requestModal').modal('show'); // Show modal
+                    $('#requestItemsList').html(data);
+                    $('#requestModal').modal('show');
                 },
                 error: function() {
                     alert('Error fetching request items.');
+                }
+            });
+        });
+
+        $('#acceptRequestBtn').on('click', function() {
+            const requestId = $('#requestId').val(); // Get the request ID from hidden input
+            $.ajax({
+                url: 'update_request_status.php',
+                type: 'POST',
+                data: { request_id: requestId, status: 'Accepted' },
+                success: function(response) {
+                    alert('Request accepted!');
+                    $('#requestModal').modal('hide');
+                    location.reload();
                 }
             });
         });

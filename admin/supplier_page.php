@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supplier Registration</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
 </head>
 <body>
     <?php include("navigation.php"); ?>
     <?php include('db_connection.php'); 
     
-    $sql = "SELECT * FROM suppliers";
-    $result = $conn->query($sql);
-    
+
     ?>
 
     <div class="container mt-4">
@@ -56,6 +58,10 @@
                     </thead>
                     <tbody>
                     <?php
+                        $sql = "SELECT * FROM suppliers WHERE archived='0'";
+                        $result = $conn->query($sql);
+    
+                        
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>";
@@ -120,6 +126,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+
+$(document).ready(function() {
+    $('#supplierTable').DataTable();
+});
+
+        
         // Edit button click event
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', function() {
@@ -145,7 +157,7 @@
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const id = this.getAttribute('data-id');
-                if (confirm('Are you sure you want to delete this supplier?')) {
+                if (confirm('Are you sure you want to archive this supplier?')) {
                     window.location.href = 'delete_supplier.php?id=' + id;
                 }
             });

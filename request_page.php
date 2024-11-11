@@ -13,37 +13,6 @@
     <?php include('db_connection.php'); ?>
 
     <?php
-    // Check if form is submitted
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Fetch data from the form
-        $staff_id = $_POST['staff_id'];
-        $reason = $_POST['reason'];
-        $items = $_POST['items'];
-        $quantities = $_POST['quantities'];
-
-        // Insert request into the requests_table first
-        $sqlInsertRequest = "INSERT INTO requests_table (staff_id, reason, request_date, status) VALUES (?, ?, NOW(), 'Pending')";
-        $stmt = $conn->prepare($sqlInsertRequest);
-        $stmt->bind_param("ss", $staff_id, $reason);
-        $stmt->execute();
-        $request_id = $conn->insert_id; // Get the last inserted request_id
-
-        // Insert each requested item
-        for ($i = 0; $i < count($items); $i++) {
-            $item_id = $items[$i];
-            $quantity = $quantities[$i];
-
-            $sqlInsertItem = "INSERT INTO request_items_table (request_id, item, quantity) VALUES (?, ?, ?)";
-            $stmtItem = $conn->prepare($sqlInsertItem);
-            $stmtItem->bind_param("iii", $request_id, $item_id, $quantity);
-            $stmtItem->execute();
-        }
-
-        // Redirect or display success message
-        echo "<script>alert('Request submitted successfully!'); 
-        window.location.href='request_page.php';</script>";
-    }
-
     // Fetch items available in inventory
     $sqlItems = "SELECT * FROM inventory"; // Assuming you have an `inventory` table
     $resultItems = $conn->query($sqlItems);
@@ -57,7 +26,7 @@
                 <form action="" method="POST">
                     <div class="mb-3">
                         <label for="staffId" class="form-label">Staff ID</label>
-                        <input type="text" id="staff_id" name="staff_id" value="<?php echo htmlspecialchars($staff_id); ?>" class="form-control" readonly>
+                        <input type="text" id="staff_id" name="staff_id" class="form-control" readonly>
                     </div>
 
                     <div class="mb-3">
@@ -147,6 +116,10 @@
                     <!-- AJAX content will load here -->
                 </div>
                 <div class="modal-footer">
+                    <form id="acceptRequestForm">
+                        <input type="hidden" id="requestId" name="request_id">
+                        <button type="button" class="btn btn-success" id="acceptRequestBtn">Accept Request</button>
+                    </form>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -177,7 +150,7 @@
                             if ($resultItems->num_rows > 0) {
                                 $resultItems->data_seek(0); // Reset the pointer to fetch again
                                 while ($item = $resultItems->fetch_assoc()) {
-                                    echo "<option value='{$item['id']}'>{$item['item_name']} ({$item['item_code']})</option>";
+                                    echo "<option value='{$item['item_code']}'>{$item['item_name']} ({$item['item_code']})</option>";
                                 }
                             }
                             ?>
@@ -199,7 +172,35 @@
             $(this).closest('.item-row').remove();
         });
 
-        // AJAX for modal handling omitted for brevity
+        // Load request details in modal
+        $(document).on('click', '.view-btn', function() {
+            const requestId = $(this).data('id');
+            $('#requestId').val(requestId);  // Set hidden input value for request ID
+            $.ajax({
+                url: 'fetch_request_details.php',
+                type: 'POST',
+                data: { request_id: requestId },
+                success: function(response) {
+                    $('#modalContent').html(response);
+                    $('#requestModal').modal('show');
+                }
+            });
+        });
+
+        // Accept request via AJAX
+        $('#acceptRequestBtn').on('click', function() {
+            const requestId = $('#requestId').val();
+            $.ajax({
+                url: 'update_request_status.php',
+                type: 'POST',
+                data: { request_id: requestId, status: 'Accepted' },
+                success: function(response) {
+                    alert('Request accepted!');
+                    $('#requestModal').modal('hide');
+                    location.reload(); // Reload page to reflect status update
+                }
+            });
+        });
     });
     </script>
 

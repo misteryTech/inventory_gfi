@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $supplierName = $_POST['supplierName'];
     $itemStatus = $_POST['itemStatus'];
     $itemCondition = $_POST['itemCondition'];
+    $archive = '0';
 
     // Create QR code
     $qrCodeDir = 'qrcodes/'; // Directory where QR codes will be saved
@@ -23,8 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     QRcode::png($itemCode, $qrCodeFile, QR_ECLEVEL_L, 4); // Generate QR code
 
     // SQL query to insert new inventory item
-    $sql = "INSERT INTO inventory (item_code, item_name, category, stock, price, supplier_name, qr_code_path, status, item_condition) 
-            VALUES ('$itemCode', '$itemName', '$itemCategory', '$itemStock', '$itemPrice', '$supplierName', '$qrCodeFile', '$itemStatus', '$itemCondition')";
+    $sql = "INSERT INTO inventory (item_code, item_name, category, stock, price, supplier_name, qr_code_path, status, item_condition, archive) 
+            VALUES ('$itemCode', '$itemName', '$itemCategory', '$itemStock', '$itemPrice', '$supplierName', '$qrCodeFile', '$itemStatus', '$itemCondition', '$archive)";
 
     if ($conn->query($sql) === TRUE) {
         echo "New inventory item registered successfully!";

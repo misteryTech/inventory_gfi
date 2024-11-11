@@ -25,6 +25,10 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
                     <a class="nav-link active" aria-current="page" href="#">Home</a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Release Item</a>
+                </li>
+
                 <!-- Administrator-specific links -->
                 <?php if ($role === 'Administrator'): ?>
                     <li class="nav-item">
@@ -62,23 +66,12 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
 
+              
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <?php echo htmlspecialchars($username); ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
-                        <!-- Show profile-related options only if user is logged in (not 'Guest') -->
-                        <?php if ($username !== 'Guest'): ?>
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Activity Log</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-                        <?php else: ?>
-                            <li><a class="dropdown-item" href="login.php">Login</a></li>
-                        <?php endif; ?>
-                    </ul>
+                    <a class="nav-link"> <?php echo htmlspecialchars($username); ?></a>
                 </li>
+
+                 <a class="nav-link" href="index.php">Logout</a>
             </ul>
         </div>
     </div>

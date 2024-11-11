@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Layout</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+
+
     <style>
         /* Minimize table column widths */
         table th, table td {
@@ -24,7 +32,8 @@
     // Fetch inventory items
     $sql = "SELECT i.*, s.id as supplier_id, s.supplier_name
             FROM inventory i 
-            INNER JOIN suppliers s ON i.supplier_name = s.id"; 
+            INNER JOIN suppliers s ON i.supplier_name = s.id
+            WHERE i.archive ='0'"; 
     $result = $conn->query($sql);
 
     // Fetch the list of suppliers from the database
@@ -139,7 +148,7 @@
                                 echo "<td>
                                 <button class='btn btn-primary btn-sm view-btn' data-id='" . $row['id'] . "'>View</button>
                                 <button class='btn btn-success btn-sm edit-btn' data-id='" . $row['id'] . "'>Edit</button>
-                                <button class='btn btn-danger btn-sm delete-btn' data-id='" . $row['id'] . "'>Delete</button>
+                                <button class='btn btn-danger btn-sm delete-btn' data-id='" . $row['id'] . "'>Archive</button>
                                       </td>";
                                 echo "</tr>";
                             }
@@ -332,6 +341,11 @@ document.querySelectorAll('.edit-btn').forEach(button => {
                 console.error("Fetch error: ", err); // Log any fetch errors
             });
     });
+});
+
+
+$(document).ready(function() {
+    $('#inventoryTable').DataTable();
 });
 
 

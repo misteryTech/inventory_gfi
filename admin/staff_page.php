@@ -23,18 +23,24 @@
 
                     <div class="mb-3">
                         <label for="staffId" class="form-label">Staff ID</label>
-                        <input type="text" class="form-control" name="staffId" required>
+                        <input type="number" class="form-control" name="staffId" required>
                     </div>
 
                     <div class="mb-3 row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" name="firstName" required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="middleName" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control" name="middleName" required>
+                        </div>
+
+                        <div class="col-md-4">
                             <label for="lastName" class="form-label">Last Name</label>
                             <input type="text" class="form-control" name="lastName" required>
                         </div>
+
                     </div>
 
                     <div class="mb-3">
@@ -45,7 +51,11 @@
                         <label for="staffEmail" class="form-label">Staff Email</label>
                         <input type="email" class="form-control" name="staffEmail" required>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 row">
+
+                       <div class="col-md-6">
+                         
+                       
                         <label for="staffPosition" class="form-label">Position</label>
                         <select class="form-select" name="staffPosition" required>
                             <option value="">Select Position</option>
@@ -55,8 +65,13 @@
                             <option value="Technician">Technician</option>
                             <option value="Administrator">Administrator</option>
                         </select>
-                    </div>
-                    <div class="mb-3">
+
+                        </div>
+
+
+                        <div class="col-md-6">
+                         
+                       
                         <label for="staffDepartment" class="form-label">Department</label>
                         <select class="form-select" name="staffDepartment" required>
                             <option value="">Select Department</option>
@@ -65,7 +80,11 @@
                             <option value="Sales">Sales</option>
                             <option value="Finance">Finance</option>
                         </select>
+ 
+                         </div>
+
                     </div>
+                 
                  
                     <div class="mb-3">
                         <label for="staffUsername" class="form-label">Username</label>
@@ -98,7 +117,7 @@
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>";
-                                echo "<td>" . $row['staff_firstname'] . ' ' . $row['staff_lastname'] . "</td>";
+                                echo "<td>" . $row['staff_firstname'] . ' ' .$row['staff_middlename'] .' '. $row['staff_lastname'] . "</td>";
                                 echo "<td>" . $row['staff_contact'] . "</td>";
                                 echo "<td>" . $row['staff_email'] . "</td>";
                                 echo "<td>" . $row['staff_position'] . "</td>";

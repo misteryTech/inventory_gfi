@@ -58,6 +58,13 @@
             <div class="col-md-5">
                 <h2>Request Items for Department</h2>
                 <form action="" method="POST">
+
+                <div class="mb-3">
+                        <label for="staffId" class="form-label">Request Number</label>
+                        <input type="text" id="request_number" name="request_number" value="" class="form-control" readonly>
+                    </div>
+
+
                     <div class="mb-3">
                         <label for="staffId" class="form-label">Staff ID</label>
                         <input type="text" id="staff_id" name="staff_id" value="<?php echo htmlspecialchars($staff_id); ?>" class="form-control" readonly>

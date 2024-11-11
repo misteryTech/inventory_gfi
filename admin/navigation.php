@@ -59,24 +59,11 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
                     <input class="form-control me-2" type="search" name="search" placeholder="Search inventory by Item Code" aria-label="Search" id="searchInput" required>
                     <button type="submit" class="btn btn-outline-success">Search</button>
                 </form>
-
+         
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarUserDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <?php echo htmlspecialchars($username); ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
-                        <!-- Show profile-related options only if user is logged in (not 'Guest') -->
-                        <?php if ($username !== 'Guest'): ?>
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Activity Log</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-                        <?php else: ?>
-                            <li><a class="dropdown-item" href="login.php">Login</a></li>
-                        <?php endif; ?>
-                    </ul>
+                    <a class="nav-link"> <?php echo htmlspecialchars($username); ?></a>
                 </li>
+                <a class="nav-link" href="logout.php">Logout</a>
             </ul>
         </div>
     </div>
@@ -148,7 +135,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
                             <td>${item.stock}</td>
                             <td>${item.price}</td>
                             <td>
-                                <a href="view_item.php?id=${item.id}" class="btn btn-primary btn-sm">View</a>
+                                <a href="view_item.php?id=${item.item_code}" class="btn btn-primary btn-sm">View</a>
                             </td>
                         `;
                         resultsContainer.appendChild(row);
