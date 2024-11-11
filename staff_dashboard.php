@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Department Item Request Form</title>
-    < <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+        <!-- Bootstrap and jQuery Scripts -->
+     <!-- Bootstrap, jQuery, and DataTables Scripts -->
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
 
@@ -23,11 +28,12 @@
         $reason = $_POST['reason'];
         $items = $_POST['items'];
         $quantities = $_POST['quantities'];
+        $request_number = $_POST['request_number'];
 
         // Insert request into the requests_table first
-        $sqlInsertRequest = "INSERT INTO requests_table (staff_id, reason, request_date, status) VALUES (?, ?, NOW(), 'Pending')";
+        $sqlInsertRequest = "INSERT INTO requests_table (staff_id, reason, request_date, status, request_number) VALUES (?, ?, NOW(), 'Pending', ?)";
         $stmt = $conn->prepare($sqlInsertRequest);
-        $stmt->bind_param("ss", $staff_id, $reason);
+        $stmt->bind_param("sss", $staff_id, $reason ,$request_number);
         $stmt->execute();
         $request_id = $conn->insert_id; // Get the last inserted request_id
 
@@ -44,7 +50,7 @@
 
         // Redirect or display success message
         echo "<script>alert('Request submitted successfully!'); 
-        window.location.href='request_page.php';</script>";
+        window.location.href='staff_dashboard.php';</script>";
     }
 
     // Fetch items available in inventory
@@ -60,10 +66,9 @@
                 <form action="" method="POST">
 
                 <div class="mb-3">
-                        <label for="staffId" class="form-label">Request Number</label>
-                        <input type="text" id="request_number" name="request_number" value="" class="form-control" readonly>
-                    </div>
-
+    <label for="request_number" class="form-label">Request Number</label>
+    <input type="text" id="request_number" name="request_number" value="" class="form-control" readonly>
+</div>
 
                     <div class="mb-3">
                         <label for="staffId" class="form-label">Staff ID</label>
@@ -167,13 +172,18 @@
         </div>
     </div>
 
-    <!-- Bootstrap and jQuery Scripts -->
-     <!-- Bootstrap, jQuery, and DataTables Scripts -->
-     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
 
     <script>
+
+// Generate a random 6-digit request number
+function generateRandomRequestNumber() {
+    return Math.floor(100000 + Math.random() * 900000); // Ensures a 6-digit number
+}
+
+// Set the random request number in the input field
+document.getElementById('request_number').value = generateRandomRequestNumber();
+
 
 $('#requestedItemsTable').DataTable();
 

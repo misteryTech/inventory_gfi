@@ -33,7 +33,7 @@
     $sql = "SELECT i.*, s.id as supplier_id, s.supplier_name
             FROM inventory i 
             INNER JOIN suppliers s ON i.supplier_name = s.id
-            WHERE i.archive ='0'"; 
+            WHERE i.archive ='0' ORDER BY i.id DESC"; 
     $result = $conn->query($sql);
 
     // Fetch the list of suppliers from the database
@@ -293,9 +293,12 @@
                         // Print QR Code functionality
                         document.getElementById('printQrCode').onclick = function() {
                             const printWindow = window.open('', '_blank');
-                            printWindow.document.write('<html><head><title>Print QR Code</title></head><body>');
-                            printWindow.document.write(`<img src="${data.qr_code_path}" alt="QR Code">`);
-                            printWindow.document.write('</body></html>');
+                            printWindow.document.write('<html><head><title>Print QR Code</title><style>body { text-align: center; font-family: Arial, sans-serif; }</style></head><body>');
+printWindow.document.write(`<img src="${data.qr_code_path}" alt="QR Code" style="display: block; margin: 0 auto; width: 200px; height: 200px;">`);
+printWindow.document.write(`<h2style="margin-top: 2px;">Item Name: ${data.item_name}</h2>`);
+printWindow.document.write(`<p>Condition: ${data.item_condition}</p>`);
+printWindow.document.write('</body></html>');
+
                             printWindow.document.close();
                             printWindow.print();
                         };

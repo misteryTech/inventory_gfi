@@ -109,28 +109,33 @@
                     </thead>
                     <tbody>
                     <?php
-                    $sqlRequestedItems = "SELECT r.request_id, r.staff_id, r.reason, r.request_date, r.status, 
-s.staff_firstname, s.staff_lastname, s.staff_department 
-FROM requests_table r
-INNER JOIN staff s ON r.staff_id = s.staff_id";
+// SQL query to select requested items and order by request_id in descending order
+$sqlRequestedItems = "
+    SELECT r.request_id, r.staff_id, r.reason, r.request_date, r.status, 
+           s.staff_firstname, s.staff_lastname, s.staff_department, s.staff_middlename
+    FROM requests_table r
+    INNER JOIN staff s ON r.staff_id = s.staff_id 
+    ORDER BY r.request_id DESC
+";
 
-                    $resultRequestedItems = $conn->query($sqlRequestedItems);
+$resultRequestedItems = $conn->query($sqlRequestedItems);
 
-                    if ($resultRequestedItems->num_rows > 0) {
-                        while ($row = $resultRequestedItems->fetch_assoc()) {
-                            echo "<tr>";
-                            echo "<td>" . htmlspecialchars($row['staff_firstname'].' '. $row['staff_lastname']). "</td>";
-                            echo "<td>" . htmlspecialchars($row['staff_department']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['request_date']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['status']) . "</td>";
-                            echo "<td><button class='btn btn-primary btn-sm view-btn' data-id='" . htmlspecialchars($row['request_id']) . "'>View</button></td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='5'>No items requested yet</td></tr>";
-                    }
-                    ?>
+if ($resultRequestedItems->num_rows > 0) {
+    while ($row = $resultRequestedItems->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . htmlspecialchars($row['staff_firstname'] . ' ' . $row['staff_middlename'] . ' ' . $row['staff_lastname']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['staff_department']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['request_date']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+        echo "<td><button class='btn btn-primary btn-sm view-btn' data-id='" . htmlspecialchars($row['request_id']) . "'>View</button></td>";
+        echo "</tr>";
+    }
+} else {
+    echo "<tr><td colspan='6'>No items requested yet</td></tr>";
+}
+?>
+
                     </tbody>
                 </table>
             </div>
@@ -170,7 +175,9 @@ INNER JOIN staff s ON r.staff_id = s.staff_id";
 
     <script>
     $(document).ready(function() {
-        $('#requestedItemsTable').DataTable();
+        $('#requestedItemsTable').DataTable({
+            "order": [[0, "desc"]]  // Assuming the first column (index 0) is the request_id
+        });
 
         $('#addItem').on('click', function() {
             const itemContainer = $('#itemContainer');
