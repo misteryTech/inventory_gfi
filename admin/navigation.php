@@ -39,9 +39,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
                     <li class="nav-item">
                         <a class="nav-link" href="request_page.php">Request Staff</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Reports</a>
-                    </li>
+                   
                 <?php endif; ?>
 
                 <!-- Staff and Admin share these links -->
@@ -50,6 +48,16 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
                         <a class="nav-link" href="release_form.php">Released Page</a>
                     </li>
                 <?php endif; ?>
+
+                <li class="nav-item">
+                        <a class="nav-link" href="archive.php">Archive</a>
+                </li>
+
+
+                <li class="nav-item">
+                        <a class="nav-link" href="#">Reports</a>
+                </li>
+
             </ul>
 
             <!-- Right-aligned User Dropdown -->

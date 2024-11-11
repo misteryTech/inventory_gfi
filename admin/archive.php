@@ -33,7 +33,7 @@
     $sql = "SELECT i.*, s.id as supplier_id, s.supplier_name
             FROM inventory i 
             INNER JOIN suppliers s ON i.supplier_name = s.id
-            WHERE i.archive ='0' ORDER BY i.id DESC"; 
+            WHERE i.archive ='1' ORDER BY i.id DESC"; 
     $result = $conn->query($sql);
 
     // Fetch the list of suppliers from the database
@@ -45,99 +45,11 @@
     <div class="container mt-4">
         <div class="row">
             <!-- Registration Form for Inventory -->
-            <div class="col-md-5">
-                <h2>Register New Inventory Item</h2>
-                <form action="register_item.php" method="POST">
-                    <div class="mb-3">
-                        <label for="itemCode" class="form-label">Item Code</label>
-                        <input type="text" class="form-control" name="itemCode" placeholder="Enter item code" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="itemName" class="form-label">Item Name</label>
-                        <input type="text" class="form-control" name="itemName" placeholder="Enter item name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="itemCategory" class="form-label">Category</label>
-                        <select class="form-control" name="itemCategory" id="itemCategory" required>
-                            <option value="" disabled selected>Select Category</option>
-                            <option value="Furniture">Furniture</option>
-                            <option value="Stationery">Stationery</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Sports Equipment">Sports Equipment</option>
-                            <option value="Lab Equipment">Lab Equipment</option>
-                            <option value="Computers">Computers</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 row">
-
-                    <div class="col-md-6">
-                        <label for="itemStock" class="form-label">Stock</label>
-                        <input type="number" class="form-control" name="itemStock" placeholder="Enter stock quantity" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="itemStock" class="form-label">Unit</label>
-                        <select class="form-control" name="unit" id="Unit" required>
-                            <option value="" disabled selected>Select Unit</option>
-                            <option value="Piece">Piece</option>
-                            <option value="Set">Set</option>
-                            <option value="Pack">Pack</option>
-                     
-                        </select>
-                    </div>
-                
-                </div>
-                    <div class="mb-3">
-                        <label for="itemPrice" class="form-label">Price</label>
-                        <input type="number" class="form-control" name="itemPrice" placeholder="Enter price" step="0.01" required>
-                    </div>
-
-                    <div class="mb-3 row">
-
-                    <div class="col-md-6">
-    <label for="itemStatus" class="form-label">Status</label>
-    <select class="form-control" name="itemStatus" id="itemStatus" required>
-        <option value="" disabled selected>Select Status</option>
-        <option value="Available">Available</option>
-        <option value="Out of Stock">Out of Stock</option>
-    </select>
-    </div>
-
-    <div class="col-md-6">
-    <label for="itemCondition" class="form-label">Condition</label>
-    <select class="form-control" name="itemCondition" id="itemCondition" required>
-        <option value="" disabled selected>Select Condition</option>
-        <option value="New">New</option>
-        <option value="Used">Used</option>
-        <option value="Damaged">Damaged</option>
-        <option value="Repair">Repair</option>
-    </select>
-</div>
-</div>
-
-
-                    <h5>Supplier Details</h5>
-                    <div class="mb-3">
-                        <label for="supplierDropdown" class="form-label">Select Supplier</label>
-                        <select class="form-control mt-2" id="supplierDropdown" name="supplierName" required>
-                            <option value="" disabled selected>Select Supplier</option>
-                            <?php
-                            if ($result_supplier->num_rows > 0) {
-                                while ($row_supplier = $result_supplier->fetch_assoc()) {
-                                    echo "<option value='" . $row_supplier['id'] . "'>" . $row_supplier['supplier_name'] . "</option>";
-                                }
-                            } else {
-                                echo "<option value='' disabled>No suppliers found</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn mb-5 btn-primary">Register Item</button>
-                </form>
-            </div>
-
+          
+            
             <!-- Inventory Table -->
-            <div class="col-md-7">
-                <h2>Inventory List</h2>
+            <div class="col-md-12">
+                <h2>Archived Item</h2>
                 <table class="table table-striped" id="inventoryTable">
                     <thead class="thead-dark">
                         <tr>
@@ -160,9 +72,8 @@
                                 echo "<td>" . $row['stock'] . "</td>";
                                 echo "<td>" . $row['price'] . "</td>";
                                 echo "<td>
-                                <button class='btn btn-primary btn-sm view-btn' data-id='" . $row['id'] . "'>View</button>
-                                <button class='btn btn-success btn-sm edit-btn' data-id='" . $row['id'] . "'>Edit</button>
-                                <button class='btn btn-danger btn-sm delete-btn' data-id='" . $row['id'] . "'>Archive</button>
+                            
+                                <button class='btn btn-success btn-sm delete-btn' data-id='" . $row['id'] . "'>Restore</button>
                                       </td>";
                                 echo "</tr>";
                             }
@@ -372,8 +283,8 @@ $(document).ready(function() {
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const id = this.getAttribute('data-id');
-                if (confirm('Are you sure you want to archive this item?')) {
-                    window.location.href = 'delete_item.php?id=' + id;
+                if (confirm('Are you sure you want to restore this item?')) {
+                    window.location.href = 'restore_item.php?id=' + id;
                 }
             });
         });

@@ -26,7 +26,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Release Item</a>
+                    <a class="nav-link active" aria-current="page" href="release_item.php">Release Item</a>
                 </li>
 
                 <!-- Administrator-specific links -->

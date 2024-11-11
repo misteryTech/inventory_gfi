@@ -51,48 +51,7 @@
 
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-5">
-                <h2>Request Items for Department</h2>
-                <form action="" method="POST">
-                    <div class="mb-3">
-                        <label for="staffId" class="form-label">Staff ID</label>
-                        <input type="text" id="staff_id" name="staff_id" value="<?php echo htmlspecialchars($staff_id); ?>" class="form-control" readonly>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="reason" class="form-label">Reason for Request</label>
-                        <input type="text" class="form-control" name="reason" id="reason" required>
-                    </div>
-
-                    <div id="itemContainer">
-                        <div class="row mb-3 item-row">
-                            <div class="col-8">
-                                <label for="items" class="form-label">Select Item</label>
-                                <select class="form-select" name="items[]" required>
-                                    <option value="">Select Item</option>
-                                    <?php
-                                    if ($resultItems->num_rows > 0) {
-                                        while ($item = $resultItems->fetch_assoc()) {
-                                            echo "<option value='{$item['item_code']}'>{$item['item_name']} ({$item['item_code']})</option>";
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="col-3">
-                                <label for="quantity" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" name="quantities[]" min="1" required>
-                            </div>
-                            <div class="col-1 d-flex align-items-end">
-                                <button type="button" class="btn btn-danger remove-item">-</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn btn-success" id="addItem">Add Item</button>
-                    <button type="submit" class="btn btn-primary">Submit Request</button>
-                </form>
-            </div>
+        
 
             <div class="col-md-7">
                 <h2>Requested Items</h2>
