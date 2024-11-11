@@ -90,7 +90,7 @@
                                     // Fetch items for the first dropdown
                                     if ($resultItems->num_rows > 0) {
                                         while ($item = $resultItems->fetch_assoc()) {
-                                            echo "<option value='{$item['id']}'>{$item['item_name']} ({$item['item_code']})</option>";
+                                            echo "<option value='{$item['item_code']}'>{$item['item_name']} ({$item['item_code']})</option>";
                                         }
                                     }
                                     ?>

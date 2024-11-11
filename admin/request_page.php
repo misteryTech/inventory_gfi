@@ -99,6 +99,7 @@
                 <table class="table table-striped" id="requestedItemsTable">
                     <thead>
                         <tr>
+                            <th>Request Number</th>
                             <th>Staff Name</th>
                             <th>Department</th>
                             <th>Reason</th>
@@ -112,7 +113,7 @@
 // SQL query to select requested items and order by request_id in descending order
 $sqlRequestedItems = "
     SELECT r.request_id, r.staff_id, r.reason, r.request_date, r.status, 
-           s.staff_firstname, s.staff_lastname, s.staff_department, s.staff_middlename
+           s.staff_firstname, s.staff_lastname, s.staff_department, s.staff_middlename, r.request_number
     FROM requests_table r
     INNER JOIN staff s ON r.staff_id = s.staff_id 
     ORDER BY r.request_id DESC
@@ -123,6 +124,7 @@ $resultRequestedItems = $conn->query($sqlRequestedItems);
 if ($resultRequestedItems->num_rows > 0) {
     while ($row = $resultRequestedItems->fetch_assoc()) {
         echo "<tr>";
+        echo "<td>" . htmlspecialchars($row['request_number']) . "</td>";
         echo "<td>" . htmlspecialchars($row['staff_firstname'] . ' ' . $row['staff_middlename'] . ' ' . $row['staff_lastname']) . "</td>";
         echo "<td>" . htmlspecialchars($row['staff_department']) . "</td>";
         echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
@@ -153,6 +155,7 @@ if ($resultRequestedItems->num_rows > 0) {
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th>Department</th>
                                 <th>Item Name</th>
                                 <th>Quantity</th>
                             </tr>
