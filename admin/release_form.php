@@ -51,10 +51,8 @@
 
     <div class="container mt-4">
         <div class="row">
-        
-
             <div class="col-md-12">
-                <h2>Requested Items</h2>
+                <h2>Releasing Item</h2>
                 <table class="table table-striped" id="requestedItemsTable">
                     <thead>
                         <tr>
@@ -69,35 +67,32 @@
                     </thead>
                     <tbody>
                     <?php
-// SQL query to select requested items and order by request_id in descending order
-$sqlRequestedItems = "
-    SELECT r.request_id, r.staff_id, r.reason, r.request_date, r.status, 
-           s.staff_firstname, s.staff_lastname, s.staff_department, s.staff_middlename, r.request_number
-    FROM requests_table r
-    INNER JOIN staff s ON r.staff_id = s.staff_id 
-    
-    WHERE r.status='Pending'    ORDER BY r.request_id DESC
-";
+                    $sqlRequestedItems = "
+                        SELECT r.request_id, r.staff_id, r.reason, r.request_date, r.status, 
+                               s.staff_firstname, s.staff_lastname, s.staff_department, s.staff_middlename, r.request_number
+                        FROM requests_table r
+                        INNER JOIN staff s ON r.staff_id = s.staff_id 
+                        WHERE r.status='Accepted' ORDER BY r.request_id DESC
+                    ";
 
-$resultRequestedItems = $conn->query($sqlRequestedItems);
+                    $resultRequestedItems = $conn->query($sqlRequestedItems);
 
-if ($resultRequestedItems->num_rows > 0) {
-    while ($row = $resultRequestedItems->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td>" . htmlspecialchars($row['request_number']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['staff_firstname'] . ' ' . $row['staff_middlename'] . ' ' . $row['staff_lastname']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['staff_department']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['request_date']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['status']) . "</td>";
-        echo "<td><button class='btn btn-primary btn-sm view-btn' data-id='" . htmlspecialchars($row['request_id']) . "'>View</button></td>";
-        echo "</tr>";
-    }
-} else {
-    echo "<tr><td colspan='6'>No items requested yet</td></tr>";
-}
-?>
-
+                    if ($resultRequestedItems->num_rows > 0) {
+                        while ($row = $resultRequestedItems->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . htmlspecialchars($row['request_number']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['staff_firstname'] . ' ' . $row['staff_middlename'] . ' ' . $row['staff_lastname']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['staff_department']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['request_date']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                            echo "<td><button class='btn btn-primary btn-sm view-btn' data-id='" . htmlspecialchars($row['request_id']) . "'>View</button></td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='6'>No items requested yet</td></tr>";
+                    }
+                    ?>
                     </tbody>
                 </table>
             </div>
@@ -108,7 +103,7 @@ if ($resultRequestedItems->num_rows > 0) {
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="requestModalLabel">Request Details</h5>
+                    <h5 class="modal-title" id="requestModalLabel">Releasing Item</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modalContent">
@@ -122,10 +117,22 @@ if ($resultRequestedItems->num_rows > 0) {
                         </thead>
                         <tbody id="requestItemsList"></tbody>
                     </table>
+
+                      <!-- Additional fields for authorization and notes -->
+                      <form id="releaseForm">
+             
+                        <div class="mb-3">
+                            <label for="releaseNotes" class="form-label">Release Notes</label>
+                            <textarea class="form-control" id="releaseNotes" name="release_notes" rows="3"></textarea>
+                        </div>
+                        <input type="hidden" id="requestId" name="request_id"> <!-- Hidden input to store request ID -->
+                    </form>
+
+
                 </div>
                 <div class="modal-footer">
-                    <input type="hidden" id="requestId"> <!-- Hidden input to store request ID -->
-                    <button type="button" class="btn btn-success" id="acceptRequestBtn">Accept Request</button>
+                    <input type="hidden" id="requestId">
+                    <button type="button" class="btn btn-success" id="acceptRequestBtn">Release Item</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -139,45 +146,12 @@ if ($resultRequestedItems->num_rows > 0) {
     <script>
     $(document).ready(function() {
         $('#requestedItemsTable').DataTable({
-            "order": [[0, "desc"]]  // Assuming the first column (index 0) is the request_id
-        });
-
-        $('#addItem').on('click', function() {
-            const itemContainer = $('#itemContainer');
-            const newRow = `
-                <div class="row mb-3 item-row">
-                    <div class="col-8">
-                        <label for="items" class="form-label">Select Item</label>
-                        <select class="form-select" name="items[]" required>
-                            <option value="">Select Item</option>
-                            <?php
-                            if ($resultItems->num_rows > 0) {
-                                $resultItems->data_seek(0);
-                                while ($item = $resultItems->fetch_assoc()) {
-                                    echo "<option value='{$item['item_code']}'>{$item['item_name']} ({$item['item_code']})</option>";
-                                }
-                            }
-                            ?>
-                        </select>
-                    </div>
-                    <div class="col-3">
-                        <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" name="quantities[]" min="1" required>
-                    </div>
-                    <div class="col-1 d-flex align-items-end">
-                        <button type="button" class="btn btn-danger remove-item">-</button>
-                    </div>
-                </div>`;
-            itemContainer.append(newRow);
-        });
-
-        $(document).on('click', '.remove-item', function() {
-            $(this).closest('.item-row').remove();
+            "order": [[0, "desc"]]
         });
 
         $('.view-btn').on('click', function() {
             const requestId = $(this).data('id');
-            $('#requestId').val(requestId); // Set request ID in hidden input
+            $('#requestId').val(requestId);
             $.ajax({
                 url: 'fetch_request_items.php',
                 type: 'GET',
@@ -193,15 +167,18 @@ if ($resultRequestedItems->num_rows > 0) {
         });
 
         $('#acceptRequestBtn').on('click', function() {
-            const requestId = $('#requestId').val(); // Get the request ID from hidden input
+            const requestId = $('#requestId').val();
             $.ajax({
-                url: 'update_request_status.php',
+                url: 'release_items.php',
                 type: 'POST',
-                data: { request_id: requestId, status: 'Accepted' },
+                data: { request_id: requestId },
                 success: function(response) {
-                    alert('Request accepted!');
+                    alert('Items successfully released!');
                     $('#requestModal').modal('hide');
                     location.reload();
+                },
+                error: function() {
+                    alert('Error releasing items.');
                 }
             });
         });

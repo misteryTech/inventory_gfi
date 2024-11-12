@@ -55,7 +55,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
 
 
                 <li class="nav-item">
-                        <a class="nav-link" href="#">Reports</a>
+                        <a class="nav-link" href="report.php">Reports</a>
                 </li>
 
             </ul>

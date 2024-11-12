@@ -54,7 +54,7 @@
     }
 
     // Fetch items available in inventory
-    $sqlItems = "SELECT * FROM inventory"; // Assuming you have an `inventory` table
+    $sqlItems = "SELECT * FROM inventory WHERE archive='0' "; // Assuming you have an `inventory` table
     $resultItems = $conn->query($sqlItems);
     ?>
 

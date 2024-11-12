@@ -21,14 +21,14 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
         <div class="collapse navbar-collapse" id="navbarNav">
             <!-- Left-aligned navigation links -->
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                </li>
+            <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="staff_dashboard.php">Home</a>
+                    </li>
 
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="release_item.php">Release Item</a>
                 </li>
-
+           
                 <!-- Administrator-specific links -->
                 <?php if ($role === 'Administrator'): ?>
                     <li class="nav-item">
@@ -49,10 +49,12 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Guest'; // Default role 
                 <?php endif; ?>
 
                 <!-- Staff and Admin share these links -->
-                <?php if ($role === 'Administrator' || $role === 'staff'): ?>
-                   
+                <?php if ( $role === 'staff'): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="release_form.php">Released Page</a>
+                    <a class="nav-link active" aria-current="page" href="staff_dashboard">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="release_item.php">Released Page</a>
                     </li>
                   
                 <?php endif; ?>

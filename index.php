@@ -39,7 +39,7 @@
 <div class="container col-md-6">
     <div class="banner">
         <h2 style="color: #b30000;">Welcome to Our Inventory Management System</h2>
-        <p>Login or Register to Continue</p>
+        <p>GENSANTOS FOUNDATION COLLEGE, INC.</p>
     </div>
 
     <!-- Alert for successful registration -->
@@ -52,15 +52,6 @@
         </div>
     <?php endif; ?>
 
-    <!-- Tab buttons -->
-    <ul class="nav nav-tabs" id="loginRegisterTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="login-tab" data-toggle="tab" href="#login" role="tab">Login</a>
-        </li>
-        <!-- <li class="nav-item">
-            <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab">Register</a>
-        </li> -->
-    </ul>
 
     <!-- Tab content -->
     <div class="tab-content">
